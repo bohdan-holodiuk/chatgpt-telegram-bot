@@ -2,6 +2,10 @@ pipeline {
     agent {
         label "srv-01"
     }
+    options {
+        // This is required if you want to clean before build
+        skipDefaultCheckout(true)
+    }
 
     parameters {
         string(defaultValue: 'gpt4', name: 'ServiceName', description: 'Service name', trim: true)
@@ -31,6 +35,16 @@ pipeline {
     post {
         always {
             echo 'Always!!!!'
+            cleanWs(
+                    cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [
+                            [pattern: '.gitignore', type: 'INCLUDE'],
+                            [pattern: '.propsfile', type: 'EXCLUDE']
+                    ]
+            )
         }
         success {
             echo 'Successful!!!!'
