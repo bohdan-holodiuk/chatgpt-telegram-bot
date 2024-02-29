@@ -12,7 +12,7 @@ pipeline {
         stage('Telegram ChatBot OpenAI service') {
             steps {
                 withCredentials([file(credentialsId: "tbot-${params.ServiceName}", variable: 'ENV_FILE')]) {
-                    sh "cp ${ENV_FILE} ."
+                    sh "/bin/cp -rf ${ENV_FILE} ."
                     script {
                         if (params.Status == 'start') {
                             echo 'Start ChatBot service'
