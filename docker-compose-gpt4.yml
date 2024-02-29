@@ -1,0 +1,15 @@
+version: '3'
+services:
+  tbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gpt-4-0125-preview
+    volumes:
+      - data:/app/usage_logs
+    env_file:
+      - .env.prod.gpt4
+    restart: always
+
+volumes:
+  data:

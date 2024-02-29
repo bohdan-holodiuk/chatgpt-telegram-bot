@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  tbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gpt-3.5-turbo
+    volumes:
+      - data:/app/usage_logs
+    env_file:
+      - .env.prod.gpt3
+    restart: always
+    networks:
+      - lan
+
+networks:
+  lan:
+    name: gpt3-network
+
+volumes:
+  data:
+    name: gpt3-data

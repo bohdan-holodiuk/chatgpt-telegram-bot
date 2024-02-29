@@ -1,0 +1,70 @@
+pipeline {
+    agent {
+        label "srv-01"
+    }
+
+    parameters {
+        string(defaultValue: 'gpt4', name: 'ServiceName', description: 'Service name', trim: true)
+        choice(choices: ['start', 'stop', 'skip'], name: 'Status')
+    }
+
+    stages {
+        stage('Telegram ChatBot OpenAI service') {
+            steps {
+                withCredentials([file(credentialsId: "tbot-${params.ServiceName}", variable: 'ENV_FILE')]) {
+                    script {
+                        if (params.Status == 'start') {
+                            echo 'Start ChatBot service'
+                            sh "docker compose -f docker-compose-${params.ServiceName}.yml -p ${params.ServiceName} up -d --remove-orphans"
+                        } else if (params.Status == 'stop') {
+                            echo 'Stop ChatBot service'
+                            sh "docker compose -f docker-compose-${params.ServiceName}.yml -p ${params.ServiceName} down"
+                        } else {
+                            echo 'Skip any actions related to ChatBot service'
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Always!!!!'
+        }
+        success {
+            echo 'Successful!!!!'
+
+//            mail bcc: '',
+//                    body: "<b>[Information]</b>" +
+//                            "<br>Project: ${env.JOB_NAME} " +
+//                            "<br>Build Number: ${env.BUILD_NUMBER} " +
+//                            "<br> URL de build: ${env.BUILD_URL}",
+//                    cc: '',
+//                    charset: 'UTF-8',
+//                    from: '',
+//                    mimeType: 'text/html',
+//                    replyTo: '',
+//                    subject: "[${env.NODE_NAME}]Success CI: Project name -> ${env.JOB_NAME}",
+//                    to: "${env.DEFAULT_GATEWAY_RECIPIENTS}"
+        }
+        failure {
+            echo 'Failed!!!!'
+
+//            mail bcc: '',
+//                    body: "<b>[Information]</b>" +
+//                            "<br>Project: ${env.JOB_NAME} " +
+//                            "<br>Build Number: ${env.BUILD_NUMBER} " +
+//                            "<br> URL de build: ${env.BUILD_URL}",
+//                    cc: '',
+//                    charset: 'UTF-8',
+//                    from: '',
+//                    mimeType: 'text/html',
+//                    replyTo: '',
+//                    subject: "[${env.NODE_NAME}]Failed CI: Project name -> ${env.JOB_NAME}",
+//                    to: "${env.DEFAULT_GATEWAY_RECIPIENTS}"
+        }
+        changed {
+            echo 'Changes!!!!'
+        }
+    }
+}
